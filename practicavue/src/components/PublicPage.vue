@@ -152,6 +152,11 @@
               outlined
               type="date"
             />
+            <v-checkbox
+              v-model="selectedUser.estado"
+              label="Estado del usuario"
+              outlined
+            />
           </v-form>
         </v-card-text>
 
@@ -177,12 +182,12 @@ export default {
       showAddUserModal: false,
       showEditUserModal: false,
       headers: [
-        { text: "ID", value: "id", align: "start" },
-        { text: "Nombre", value: "name" },
-        { text: "Correo Electrónico", value: "email" },
-        { text: "Teléfono", value: "phone" },
-        { text: "Estado", value: "state" },
-        { text: "Acciones", value: "actions", sortable: false },
+        { title: "ID", value: "id", align: "start" },
+        { title: "Nombre", value: "name" },
+        { title: "Correo Electrónico", value: "email" },
+        { title: "Teléfono", value: "phone" },
+        { title: "Estado", value: "state" },
+        { title: "Acciones", value: "actions", sortable: false },
       ],
       users: [],
       newUser: {
@@ -202,6 +207,7 @@ export default {
         dui: "",
         direccion: "",
         nacimiento: "",
+        estado: "",
       },
     };
   },
@@ -240,6 +246,7 @@ export default {
     },
     async updateUser() {
       try {
+        this.selectedUser.estado = this.selectedUser.estado ? 1 : 0;
         await AxiosRequest(
           `usuarios/${this.selectedUser.id}`,
           "U",
@@ -267,6 +274,7 @@ export default {
         dui: user.dui,
         direccion: user.address,
         nacimiento: user.birthdate,
+        estado: user.state_value === 1,
       };
       this.showEditUserModal = true;
     },
