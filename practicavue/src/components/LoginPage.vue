@@ -93,7 +93,10 @@ export default {
             correo: this.email,
             clave: this.password,
           });
+          // Guardar el token en localStorage
+          localStorage.setItem('jwtToken', response.token);
           showAlert({ status: true, message: response.message });
+          this.$router.push("/home");
         } catch (error) {
           showAlert({
             status: false,

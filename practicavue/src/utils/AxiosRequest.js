@@ -40,11 +40,16 @@ const AxiosRequest = async (endpoint, method, form = {}) => {
     formData.append(key, value);
   });
 
+  // Leer el token del localStorage
+  const token = localStorage.getItem('jwtToken');
+
   // Configurar opciones para Axios
   const OPTIONS = {
     method: httpMethod,
     url: SERVER_URL + endpoint,
-    headers: {},
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '', // Agregar token si existe
+    },
     data: null,
   };
 
