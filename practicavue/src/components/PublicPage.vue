@@ -71,7 +71,7 @@
         </v-card-title>
 
         <v-card-text>
-          <v-form ref="addUserForm">
+          <v-form ref="addUserForm" v-model="formValid">
             <v-text-field
               v-model="newUser.nombre"
               label="Nombre"
@@ -95,8 +95,14 @@
               v-model="newUser.telefono"
               label="Teléfono"
               outlined
+              v-maska="'####-####'"
             />
-            <v-text-field v-model="newUser.dui" label="DUI" outlined />
+            <v-text-field
+              v-model="newUser.dui"
+              label="DUI"
+              outlined
+              v-maska="'########-#'"
+            />
             <v-textarea
               v-model="newUser.direccion"
               label="Dirección"
@@ -127,7 +133,7 @@
         </v-card-title>
 
         <v-card-text>
-          <v-form ref="editUserForm">
+          <v-form ref="editUserForm" v-model="formValid">
             <v-text-field
               v-model="selectedUser.nombre"
               label="Nombre"
@@ -144,8 +150,14 @@
               v-model="selectedUser.telefono"
               label="Teléfono"
               outlined
+              v-maska="'####-####'"
             />
-            <v-text-field v-model="selectedUser.dui" label="DUI" outlined />
+            <v-text-field
+              v-model="selectedUser.dui"
+              label="DUI"
+              outlined
+              v-maska="'########-#'"
+            />
             <v-textarea
               v-model="selectedUser.direccion"
               label="Dirección"
@@ -179,6 +191,9 @@
   
   <script>
 import AxiosRequest from "@/utils/AxiosRequest";
+import useVuelidate from "@vuelidate/core";
+import { required, email, helpers } from "@vuelidate/validators";
+import { vMaska } from 'maska/vue'
 
 export default {
   data() {
@@ -186,6 +201,7 @@ export default {
       search: "",
       showAddUserModal: false,
       showEditUserModal: false,
+      formValid: false,
       headers: [
         { title: "ID", value: "id", align: "start" },
         { title: "Nombre", value: "name" },
@@ -216,8 +232,35 @@ export default {
       },
     };
   },
+  validations() {
+    return {
+      newUser: {
+        nombre: { required },
+        correo: { required, email },
+        clave: { required },
+        telefono: {
+          required,
+          $params: {
+            telefono: { mask: "####-####" },
+          },
+        },
+        dui: {
+          required,
+          $params: {
+            dui: { mask: "########-#" },
+          },
+        },
+        direccion: { required },
+        nacimiento: { required },
+      },
+    };
+  },
+  directives: {
+    maska: vMaska
+  },
   created() {
     this.fetchUsers();
+    this.$v = useVuelidate();
   },
   methods: {
     async fetchUsers() {
@@ -328,7 +371,7 @@ h1 {
 .row-red {
   border: 2px solid red;
 }
-.blue--text{
+.blue--text {
   color: blue;
   font-size: 2rem;
 }
