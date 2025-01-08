@@ -16,6 +16,7 @@
     "axios": "^1.7.9",
     "maska": "^3.0.2",
     "roboto-fontface": "*",
+    "sweetalert2": "^11.15.10",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"
   },

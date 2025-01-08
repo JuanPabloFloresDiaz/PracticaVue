@@ -3,7 +3,7 @@
     <!-- Título -->
     <v-row>
       <v-col class="text-left">
-        <v-icon left class="blue--text">mdi-vuetify</v-icon>
+        <VuetifyLogo />
       </v-col>
       <v-col class="text-center">
         <h1 class="text-center">Gestión de usuarios</h1>
@@ -193,7 +193,8 @@
 import AxiosRequest from "@/utils/AxiosRequest";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers } from "@vuelidate/validators";
-import { vMaska } from 'maska/vue'
+import { vMaska } from "maska/vue";
+import VuetifyLogo from "@/components/VuetifyLogo.vue";
 
 export default {
   data() {
@@ -202,6 +203,7 @@ export default {
       showAddUserModal: false,
       showEditUserModal: false,
       formValid: false,
+      isModalOpen: false,
       headers: [
         { title: "ID", value: "id", align: "start" },
         { title: "Nombre", value: "name" },
@@ -232,6 +234,9 @@ export default {
       },
     };
   },
+  components: {
+    VuetifyLogo,
+  },
   validations() {
     return {
       newUser: {
@@ -253,10 +258,29 @@ export default {
         direccion: { required },
         nacimiento: { required },
       },
+      selectedUser: {
+        nombre: { required },
+        correo: { required, email },
+        clave: { required },
+        telefono: {
+          required,
+          $params: {
+            telefono: { mask: "####-####" },
+          },
+        },
+        dui: {
+          required,
+          $params: {
+            dui: { mask: "########-#" },
+          },
+        },
+        direccion: { required },
+        nacimiento: { required },
+      },
     };
   },
   directives: {
-    maska: vMaska
+    maska: vMaska,
   },
   created() {
     this.fetchUsers();

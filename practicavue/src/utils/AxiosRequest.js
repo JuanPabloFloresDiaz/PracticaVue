@@ -73,7 +73,7 @@ const AxiosRequest = async (endpoint, method, form = {}) => {
     if (error.response) {
       console.log('Detalles del error en el servidor:', error.response.data);
       throw new Error(
-        `Error retornado desde el servidor: ${
+        `${
           error.response.data.error || 'Error desconocido'
         }`
       );
