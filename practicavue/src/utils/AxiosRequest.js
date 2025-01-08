@@ -26,6 +26,9 @@ const AxiosRequest = async (endpoint, method, form = {}) => {
     case 'D':
       httpMethod = 'DELETE';
       break;
+    case 'P':
+      httpMethod = 'PATCH';
+      break;
     default:
       console.error('Método no válido');
       return;
