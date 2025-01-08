@@ -1,5 +1,5 @@
 <template>
-    <PublicPage />
+    <PrivatePage />
   </template>
   
   <script setup>

@@ -1,5 +1,5 @@
 <template>
-    <FormExample />
+    <LoginPage />
   </template>
   
   <script setup>

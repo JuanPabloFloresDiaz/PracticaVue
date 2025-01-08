@@ -1,5 +1,5 @@
 <template>
-  <HelloWorld />
+  <PublicPage />
 </template>
 
 <script setup>

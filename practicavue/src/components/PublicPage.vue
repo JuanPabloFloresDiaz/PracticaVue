@@ -2,11 +2,16 @@
   <v-container>
     <!-- Título -->
     <v-row>
-      <v-col>
+      <v-col class="text-left">
+        <v-icon left class="blue--text">mdi-vuetify</v-icon>
+      </v-col>
+      <v-col class="text-center">
         <h1 class="text-center">Gestión de usuarios</h1>
       </v-col>
-      <v-col>
-        <h5 class="text-right" @click="goToLogin">Ir al login</h5>
+      <v-col class="text-right">
+        <v-btn icon @click="goToLogin">
+          <v-icon>mdi-login</v-icon>
+        </v-btn>
       </v-col>
     </v-row>
 
@@ -217,7 +222,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await AxiosRequest("usuarios", "R");
+        const response = await AxiosRequest("/usuarios_public/usuarios", "R");
         const data = response.dataset;
         this.users = data.map((user) => ({
           id: user.ID,
@@ -236,7 +241,7 @@ export default {
     },
     async createUser() {
       try {
-        await AxiosRequest("usuarios", "C", this.newUser);
+        await AxiosRequest("/usuarios_public/usuarios", "C", this.newUser);
         this.fetchUsers();
         this.showAddUserModal = false;
         this.clearNewUserForm();
@@ -248,7 +253,7 @@ export default {
       try {
         this.selectedUser.estado = this.selectedUser.estado ? 1 : 0;
         await AxiosRequest(
-          `usuarios/${this.selectedUser.id}`,
+          `/usuarios_public/usuarios/${this.selectedUser.id}`,
           "U",
           this.selectedUser
         );
@@ -280,7 +285,7 @@ export default {
     },
     async deleteUser(user) {
       try {
-        await AxiosRequest(`usuarios/${user.id}`, "D");
+        await AxiosRequest(`/usuarios_public/usuarios/${user.id}`, "D");
         this.fetchUsers();
       } catch (error) {
         console.error("Error al eliminar el usuario:", error);
@@ -288,7 +293,7 @@ export default {
     },
     async changeState(user) {
       try {
-        await AxiosRequest(`usuarios/${user.id}/state`, "P");
+        await AxiosRequest(`/usuarios_public/usuarios/${user.id}/state`, "P");
         this.fetchUsers();
       } catch (error) {
         console.error("Error al editar el estado del usuario:", error);
@@ -322,6 +327,10 @@ h1 {
 }
 .row-red {
   border: 2px solid red;
+}
+.blue--text{
+  color: blue;
+  font-size: 2rem;
 }
 </style>
   
