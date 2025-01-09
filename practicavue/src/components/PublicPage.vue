@@ -52,10 +52,10 @@
             <v-btn icon color="primary" @click="editUser(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon color="error" @click="deleteUser(item)">
+            <v-btn icon color="error" @click="confirmDeleteUser(item)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
-            <v-btn icon color="warning" @click="changeState(item)">
+            <v-btn icon color="warning" @click="confirmChangeState(item)">
               <v-icon>mdi-alert-circle</v-icon>
             </v-btn>
           </template>
@@ -195,6 +195,11 @@ import useVuelidate from "@vuelidate/core";
 import { required, email, helpers } from "@vuelidate/validators";
 import { vMaska } from "maska/vue";
 import VuetifyLogo from "@/components/VuetifyLogo.vue";
+import {
+  showAlert,
+  confirmAction,
+  confirmToastAction,
+} from "@/plugins/sweetalert2";
 
 export default {
   data() {
@@ -240,42 +245,94 @@ export default {
   validations() {
     return {
       newUser: {
-        nombre: { required },
-        correo: { required, email },
-        clave: { required },
+        nombre: {
+          required: helpers.withMessage("El nombre es obligatorio", required),
+          minLength: helpers.withMessage(
+            "El nombre debe tener al menos 3 caracteres",
+            (value) => value && value.length >= 3
+          ),
+        },
+        correo: {
+          required: helpers.withMessage("El correo es obligatorio", required),
+          email: helpers.withMessage("Debes ingresar un correo válido", email),
+        },
+        clave: {
+          required: helpers.withMessage(
+            "La contraseña es obligatoria",
+            required
+          ),
+        },
         telefono: {
-          required,
-          $params: {
-            telefono: { mask: "####-####" },
-          },
+          required: helpers.withMessage("El teléfono es obligatorio", required),
+          validTelefono: helpers.withMessage(
+            "El teléfono debe tener el formato ####-####",
+            (value) => /^\d{4}-\d{4}$/.test(value)
+          ),
         },
         dui: {
-          required,
-          $params: {
-            dui: { mask: "########-#" },
-          },
+          required: helpers.withMessage("El DUI es obligatorio", required),
+          validDui: helpers.withMessage(
+            "El DUI debe tener el formato ########-#",
+            (value) => /^\d{8}-\d{1}$/.test(value)
+          ),
         },
-        direccion: { required },
-        nacimiento: { required },
+        direccion: {
+          required: helpers.withMessage(
+            "La dirección es obligatoria",
+            required
+          ),
+        },
+        nacimiento: {
+          required: helpers.withMessage(
+            "La fecha de nacimiento es obligatoria",
+            required
+          ),
+        },
       },
       selectedUser: {
-        nombre: { required },
-        correo: { required, email },
-        clave: { required },
+        nombre: {
+          required: helpers.withMessage("El nombre es obligatorio", required),
+          minLength: helpers.withMessage(
+            "El nombre debe tener al menos 3 caracteres",
+            (value) => value && value.length >= 3
+          ),
+        },
+        correo: {
+          required: helpers.withMessage("El correo es obligatorio", required),
+          email: helpers.withMessage("Debes ingresar un correo válido", email),
+        },
+        clave: {
+          required: helpers.withMessage(
+            "La contraseña es obligatoria",
+            required
+          ),
+        },
         telefono: {
-          required,
-          $params: {
-            telefono: { mask: "####-####" },
-          },
+          required: helpers.withMessage("El teléfono es obligatorio", required),
+          validTelefono: helpers.withMessage(
+            "El teléfono debe tener el formato ####-####",
+            (value) => /^\d{4}-\d{4}$/.test(value)
+          ),
         },
         dui: {
-          required,
-          $params: {
-            dui: { mask: "########-#" },
-          },
+          required: helpers.withMessage("El DUI es obligatorio", required),
+          validDui: helpers.withMessage(
+            "El DUI debe tener el formato ########-#",
+            (value) => /^\d{8}-\d{1}$/.test(value)
+          ),
         },
-        direccion: { required },
-        nacimiento: { required },
+        direccion: {
+          required: helpers.withMessage(
+            "La dirección es obligatoria",
+            required
+          ),
+        },
+        nacimiento: {
+          required: helpers.withMessage(
+            "La fecha de nacimiento es obligatoria",
+            required
+          ),
+        },
       },
     };
   },
@@ -284,7 +341,9 @@ export default {
   },
   created() {
     this.fetchUsers();
-    this.$v = useVuelidate();
+  },
+  setup() {
+    return { v$: useVuelidate() };
   },
   methods: {
     async fetchUsers() {
@@ -307,27 +366,53 @@ export default {
       }
     },
     async createUser() {
+      this.v$.newUser.$touch(); // Marcar todos los campos como tocados para disparar las validaciones
+      if (this.v$.newUser.$invalid) {
+        showAlert({
+          status: false,
+          message: "Por favor, corrige los errores en el formulario",
+        });
+        return;
+      }
+
       try {
-        await AxiosRequest("/usuarios_public/usuarios", "C", this.newUser);
+        const response = await AxiosRequest(
+          "/usuarios_public/usuarios",
+          "C",
+          this.newUser
+        );
+        showAlert({ status: true, message: response.message });
         this.fetchUsers();
         this.showAddUserModal = false;
         this.clearNewUserForm();
       } catch (error) {
-        console.error("Error al crear el usuario:", error);
+        this.showAddUserModal = false;
+        showAlert({ status: false, message: error.message });
       }
     },
     async updateUser() {
+      this.v$.selectedUser.$touch();
+      if (this.v$.selectedUser.$invalid) {
+        showAlert({
+          status: false,
+          message: "Por favor, corrige los errores en el formulario",
+        });
+        return;
+      }
+
       try {
         this.selectedUser.estado = this.selectedUser.estado ? 1 : 0;
-        await AxiosRequest(
+        const response = await AxiosRequest(
           `/usuarios_public/usuarios/${this.selectedUser.id}`,
           "U",
           this.selectedUser
         );
+        showAlert({ status: true, message: response.message });
         this.fetchUsers(); // Recargar los usuarios para reflejar los cambios
         this.showEditUserModal = false; // Cerrar el modal
       } catch (error) {
-        console.error("Error al actualizar el usuario:", error);
+        this.showEditUserModal = false; // Cerrar el modal
+        showAlert({ status: false, message: error.message });
       }
     },
     getRowClass(item) {
@@ -352,19 +437,46 @@ export default {
     },
     async deleteUser(user) {
       try {
-        await AxiosRequest(`/usuarios_public/usuarios/${user.id}`, "D");
+        const response = await AxiosRequest(
+          `/usuarios_public/usuarios/${user.id}`,
+          "D"
+        );
         this.fetchUsers();
+        showAlert({ status: true, message: response.message });
       } catch (error) {
-        console.error("Error al eliminar el usuario:", error);
+        showAlert({ status: false, message: error.message });
       }
     },
     async changeState(user) {
       try {
-        await AxiosRequest(`/usuarios_public/usuarios/${user.id}/state`, "P");
+        const response = await AxiosRequest(
+          `/usuarios_public/usuarios/${user.id}/state`,
+          "P"
+        );
         this.fetchUsers();
+        showAlert({ status: true, message: response.message });
       } catch (error) {
-        console.error("Error al editar el estado del usuario:", error);
+        showAlert({ status: false, message: error.message });
       }
+    },
+    confirmDeleteUser(user) {
+      confirmAction({
+        title: "¿Eliminar usuario?",
+        text: `Estás a punto de eliminar al usuario ${user.name}. Esta acción no puede deshacerse.`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.deleteUser(user);
+        }
+      });
+    },
+    confirmChangeState(user) {
+      confirmToastAction({
+        title: `¿Cambiar el estado del usuario ${user.name}?`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.changeState(user);
+        }
+      });
     },
     clearNewUserForm() {
       this.newUser = {

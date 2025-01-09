@@ -76,11 +76,20 @@ const AxiosRequest = async (endpoint, method, form = {}) => {
 
     // Si hay un problema en la respuesta del servidor, manejarlo aquí
     if (error.response) {
-      console.log('Detalles del error en el servidor:', error.response.data);
+      const errorData = error.response.data;
+
+      // Si el error tiene un arreglo "error" (de validaciones o mensajes específicos)
+      if (Array.isArray(errorData.error)) {
+        // Concatenar todos los mensajes de error
+        const errorMessages = errorData.error.map(err => err.msg).join(', ');
+
+        // Lanzar el error concatenado
+        throw new Error(`Errores: ${errorMessages}`);
+      }
+
+      // Si no es un arreglo, mostrar el mensaje de error general
       throw new Error(
-        `${
-          error.response.data.error || 'Error desconocido'
-        }`
+        `${errorData.error || 'Error desconocido'}`
       );
     }
 

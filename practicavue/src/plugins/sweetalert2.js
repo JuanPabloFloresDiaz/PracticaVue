@@ -26,3 +26,35 @@ export function fireToast({ icon, title, timer = 3500 }) {
   })
   Toast.fire({ icon, title })
 }
+
+
+export function confirmAction({ title, text }) {
+  return Swal.fire({
+    title,
+    text,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar',
+  });
+}
+
+export function confirmToastAction({ title }) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar',
+    timer: 10000,
+    timerProgressBar: true,
+  });
+
+  return Toast.fire({
+    icon: 'warning',
+    title,
+  });
+}
