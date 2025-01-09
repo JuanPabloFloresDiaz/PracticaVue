@@ -1,3 +1,4 @@
+<!-- Capa donde se define la estructura visual del componente -->
 <template>
   <v-container>
     <!-- Título -->
@@ -64,6 +65,19 @@
     </v-row>
 
     <!-- Modal para agregar usuario -->
+    <!-- Explicación de los eventos `input` y `blur` con `$touch()`
+            @input:
+            - Se ejecuta cada vez que el valor del campo cambia.
+            - Al llamar a `v$.newUser.nombre.$touch()`, se fuerza la validación del campo en tiempo real.
+            - Esto permite mostrar mensajes de error al usuario mientras escribe.
+            @blur:
+            - Se ejecuta cuando el campo pierde el foco.
+            - Al llamar a `v$.newUser.nombre.$touch()`, se asegura de que el campo sea validado antes de que el usuario navegue a otro elemento.
+            - Esto garantiza que todos los campos requeridos estén completos y válidos antes de enviar el formulario. 
+            `$touch()` marca el campo como "tocado", lo que indica a Vuelidate que debe validar su valor de inmediato. 
+            Al combinar `@input` y `@blur` con `$touch()`, se logra una validación en tiempo real y al salir del campo, 
+            proporcionando una mejor experiencia de usuario y asegurando la integridad de los datos.
+    -->
     <v-dialog v-model="showAddUserModal" max-width="600px">
       <v-card>
         <v-card-title>
@@ -258,7 +272,9 @@
   </v-container>
 </template>
   
-  <script>
+<!-- Capa que se encarga de contener la lógica de javascript del componente -->
+<script>
+// Importación de las librerías y plugins necesarios para el componente
 import AxiosRequest from "@/utils/AxiosRequest";
 import useVuelidate from "@vuelidate/core";
 import { vMaska } from "maska/vue";
@@ -270,7 +286,9 @@ import {
 } from "@/plugins/sweetalert2";
 import { validationRules } from "@/utils/Validators";
 
+// Exportación del componente
 export default {
+  // Capa que se encarga de la definición de las propiedades del componente
   data() {
     return {
       search: "",
@@ -278,6 +296,7 @@ export default {
       showEditUserModal: false,
       formValid: false,
       isModalOpen: false,
+      // Definición de las columnas de la tabla, title es el título de la columna, key es la llave de la columna en el objeto de datos
       headers: [
         { title: "ID", key: "id", align: "start" },
         { title: "Nombre", key: "name" },
@@ -287,6 +306,7 @@ export default {
         { title: "Acciones", key: "actions", sortable: false },
       ],
       users: [],
+      // Definición de los objetos para el formulario de agregar usuario y editar usuario
       newUser: {
         nombre: "",
         correo: "",
@@ -308,9 +328,11 @@ export default {
       },
     };
   },
+  // Capa que se encarga de la definición de los componentes hijos que se utilizan en el componente principal
   components: {
     VuetifyLogo,
   },
+  // Capa que se encarda de la definición de las validaciones y reglas de validación para los formularios
   validations() {
     return {
       newUser: {
@@ -367,16 +389,20 @@ export default {
       },
     };
   },
+  // Setup es una función que se ejecuta antes de que el componente sea montado y se encarga de inicializar las variables y métodos necesarios para el componente
   setup() {
     const v$ = useVuelidate();
     return { v$ };
   },
+  // directives es una propiedad que se encarga de definir las directivas personalizadas que se utilizan en el componente
   directives: {
     maska: vMaska,
   },
+  // created es una función que se ejecuta después de que el componente es montado y se encarga de realizar las tareas de inicialiazación necesarias para el componente
   created() {
     this.fetchUsers();
   },
+  // methods es una propiedad que se encarga de definir los métodos que se utilizan dentro del componente
   methods: {
     async fetchUsers() {
       try {
@@ -520,6 +546,7 @@ export default {
 };
 </script>
   
+<!-- Capa que se encarga de definir los estilos del componente -->
 <style scoped>
 h1 {
   font-weight: bold;
