@@ -480,6 +480,7 @@ export default {
     logout() {
       // Aquí puedes manejar la lógica de cerrar sesión
       console.log("Cerrando sesión...");
+      localStorage.removeItem("jwtToken"); // Si lo almacenaste en localStorage
       this.$router.push("/");
       // Por ejemplo, redirigir al login o limpiar el estado de la sesión
     },
