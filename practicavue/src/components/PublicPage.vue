@@ -69,20 +69,27 @@
         <v-card-title>
           <span class="text-h5">Agregar Usuario</span>
         </v-card-title>
-
         <v-card-text>
-          <v-form ref="addUserForm" v-model="formValid">
+          <v-form ref="addUserForm">
             <v-text-field
               v-model="newUser.nombre"
               label="Nombre"
               outlined
               required
+              :error="v$.newUser.nombre.$invalid"
+              :error-messages="v$.newUser.nombre.$errors.map((e) => e.$message)"
+              @input="v$.newUser.nombre.$touch()"
+              @blur="v$.newUser.nombre.$touch()"
             />
             <v-text-field
               v-model="newUser.correo"
               label="Correo Electrónico"
               outlined
               required
+              :error="v$.newUser.correo.$invalid"
+              :error-messages="v$.newUser.correo.$errors.map((e) => e.$message)"
+              @input="v$.newUser.correo.$touch()"
+              @blur="v$.newUser.correo.$touch()"
             />
             <v-text-field
               v-model="newUser.clave"
@@ -90,29 +97,55 @@
               outlined
               type="password"
               required
+              :error="v$.newUser.clave.$invalid"
+              :error-messages="v$.newUser.clave.$errors.map((e) => e.$message)"
+              @input="v$.newUser.clave.$touch()"
+              @blur="v$.newUser.clave.$touch()"
             />
             <v-text-field
               v-model="newUser.telefono"
               label="Teléfono"
               outlined
               v-maska="'####-####'"
+              :error="v$.newUser.telefono.$invalid"
+              :error-messages="
+                v$.newUser.telefono.$errors.map((e) => e.$message)
+              "
+              @input="v$.newUser.telefono.$touch()"
+              @blur="v$.newUser.telefono.$touch()"
             />
             <v-text-field
               v-model="newUser.dui"
               label="DUI"
               outlined
               v-maska="'########-#'"
+              :error="v$.newUser.dui.$invalid"
+              :error-messages="v$.newUser.dui.$errors.map((e) => e.$message)"
+              @input="v$.newUser.dui.$touch()"
+              @blur="v$.newUser.dui.$touch()"
             />
             <v-textarea
               v-model="newUser.direccion"
               label="Dirección"
               outlined
+              :error="v$.newUser.direccion.$invalid"
+              :error-messages="
+                v$.newUser.direccion.$errors.map((e) => e.$message)
+              "
+              @input="v$.newUser.direccion.$touch()"
+              @blur="v$.newUser.direccion.$touch()"
             />
             <v-text-field
               v-model="newUser.nacimiento"
               label="Fecha de Nacimiento"
               outlined
               type="date"
+              :error="v$.newUser.nacimiento.$invalid"
+              :error-messages="
+                v$.newUser.nacimiento.$errors.map((e) => e.$message)
+              "
+              @input="v$.newUser.nacimiento.$touch()"
+              @blur="v$.newUser.nacimiento.$touch()"
             />
           </v-form>
         </v-card-text>
@@ -133,41 +166,65 @@
         </v-card-title>
 
         <v-card-text>
-          <v-form ref="editUserForm" v-model="formValid">
+          <v-form ref="editUserForm">
             <v-text-field
               v-model="selectedUser.nombre"
               label="Nombre"
               outlined
               required
+              :error="v$.selectedUser.nombre.$invalid"
+              :error-messages="v$.selectedUser.nombre.$errors.map((e) => e.$message)"
+              @input="v$.selectedUser.nombre.$touch()"
+              @blur="v$.selectedUser.nombre.$touch()"
             />
             <v-text-field
               v-model="selectedUser.correo"
               label="Correo Electrónico"
               outlined
               required
+              :error="v$.selectedUser.correo.$invalid"
+              :error-messages="v$.selectedUser.correo.$errors.map((e) => e.$message)"
+              @input="v$.selectedUser.correo.$touch()"
+              @blur="v$.selectedUser.correo.$touch()"
             />
             <v-text-field
               v-model="selectedUser.telefono"
               label="Teléfono"
               outlined
               v-maska="'####-####'"
+              :error="v$.selectedUser.telefono.$invalid"
+              :error-messages="v$.selectedUser.telefono.$errors.map((e) => e.$message)"
+              @input="v$.selectedUser.telefono.$touch()"
+              @blur="v$.selectedUser.telefono.$touch()"
             />
             <v-text-field
               v-model="selectedUser.dui"
               label="DUI"
               outlined
               v-maska="'########-#'"
+              :error="v$.selectedUser.dui.$invalid"
+              :error-messages="v$.selectedUser.dui.$errors.map((e) => e.$message)"
+              @input="v$.selectedUser.dui.$touch()"
+              @blur="v$.selectedUser.dui.$touch()"
             />
             <v-textarea
               v-model="selectedUser.direccion"
               label="Dirección"
               outlined
+              :error="v$.selectedUser.direccion.$invalid"
+              :error-messages="v$.selectedUser.direccion.$errors.map((e) => e.$message)"
+              @input="v$.selectedUser.direccion.$touch()"
+              @blur="v$.selectedUser.direccion.$touch()"
             />
             <v-text-field
               v-model="selectedUser.nacimiento"
               label="Fecha de Nacimiento"
               outlined
               type="date"
+              :error="v$.selectedUser.nacimiento.$invalid"
+              :error-messages="v$.selectedUser.nacimiento.$errors.map((e) => e.$message)"
+              @input="v$.selectedUser.nacimiento.$touch()"
+              @blur="v$.selectedUser.nacimiento.$touch()"
             />
             <v-checkbox
               v-model="selectedUser.estado"
@@ -192,7 +249,6 @@
   <script>
 import AxiosRequest from "@/utils/AxiosRequest";
 import useVuelidate from "@vuelidate/core";
-import { required, email, helpers } from "@vuelidate/validators";
 import { vMaska } from "maska/vue";
 import VuetifyLogo from "@/components/VuetifyLogo.vue";
 import {
@@ -200,6 +256,7 @@ import {
   confirmAction,
   confirmToastAction,
 } from "@/plugins/sweetalert2";
+import { validationRules } from "@/utils/Validators";
 
 export default {
   data() {
@@ -210,12 +267,12 @@ export default {
       formValid: false,
       isModalOpen: false,
       headers: [
-        { title: "ID", value: "id", align: "start" },
-        { title: "Nombre", value: "name" },
-        { title: "Correo Electrónico", value: "email" },
-        { title: "Teléfono", value: "phone" },
-        { title: "Estado", value: "state" },
-        { title: "Acciones", value: "actions", sortable: false },
+        { title: "ID", key: "id", align: "start" },
+        { title: "Nombre", key: "name" },
+        { title: "Correo Electrónico", key: "email" },
+        { title: "Teléfono", key: "phone" },
+        { title: "Estado", key: "state" },
+        { title: "Acciones", key: "actions", sortable: false },
       ],
       users: [],
       newUser: {
@@ -246,104 +303,66 @@ export default {
     return {
       newUser: {
         nombre: {
-          required: helpers.withMessage("El nombre es obligatorio", required),
-          minLength: helpers.withMessage(
-            "El nombre debe tener al menos 3 caracteres",
-            (value) => value && value.length >= 3
-          ),
+          required: validationRules.required,
+          minLength: validationRules.minLength(3),
         },
         correo: {
-          required: helpers.withMessage("El correo es obligatorio", required),
-          email: helpers.withMessage("Debes ingresar un correo válido", email),
+          required: validationRules.required,
+          email: validationRules.email,
         },
         clave: {
-          required: helpers.withMessage(
-            "La contraseña es obligatoria",
-            required
-          ),
+          required: validationRules.required,
         },
         telefono: {
-          required: helpers.withMessage("El teléfono es obligatorio", required),
-          validTelefono: helpers.withMessage(
-            "El teléfono debe tener el formato ####-####",
-            (value) => /^\d{4}-\d{4}$/.test(value)
-          ),
+          required: validationRules.required,
+          validTelefono: validationRules.validTelefono,
         },
         dui: {
-          required: helpers.withMessage("El DUI es obligatorio", required),
-          validDui: helpers.withMessage(
-            "El DUI debe tener el formato ########-#",
-            (value) => /^\d{8}-\d{1}$/.test(value)
-          ),
+          required: validationRules.required,
+          validDui: validationRules.validDui,
         },
         direccion: {
-          required: helpers.withMessage(
-            "La dirección es obligatoria",
-            required
-          ),
+          required: validationRules.required,
         },
         nacimiento: {
-          required: helpers.withMessage(
-            "La fecha de nacimiento es obligatoria",
-            required
-          ),
+          required: validationRules.required,
         },
       },
       selectedUser: {
         nombre: {
-          required: helpers.withMessage("El nombre es obligatorio", required),
-          minLength: helpers.withMessage(
-            "El nombre debe tener al menos 3 caracteres",
-            (value) => value && value.length >= 3
-          ),
+          required: validationRules.required,
+          minLength: validationRules.minLength(3),
         },
         correo: {
-          required: helpers.withMessage("El correo es obligatorio", required),
-          email: helpers.withMessage("Debes ingresar un correo válido", email),
-        },
-        clave: {
-          required: helpers.withMessage(
-            "La contraseña es obligatoria",
-            required
-          ),
+          required: validationRules.required,
+          email: validationRules.email,
         },
         telefono: {
-          required: helpers.withMessage("El teléfono es obligatorio", required),
-          validTelefono: helpers.withMessage(
-            "El teléfono debe tener el formato ####-####",
-            (value) => /^\d{4}-\d{4}$/.test(value)
-          ),
+          required: validationRules.required,
+          validTelefono: validationRules.validTelefono,
         },
         dui: {
-          required: helpers.withMessage("El DUI es obligatorio", required),
-          validDui: helpers.withMessage(
-            "El DUI debe tener el formato ########-#",
-            (value) => /^\d{8}-\d{1}$/.test(value)
-          ),
+          required: validationRules.required,
+          validDui: validationRules.validDui,
         },
         direccion: {
-          required: helpers.withMessage(
-            "La dirección es obligatoria",
-            required
-          ),
+          required: validationRules.required,
         },
         nacimiento: {
-          required: helpers.withMessage(
-            "La fecha de nacimiento es obligatoria",
-            required
-          ),
+          required: validationRules.required,
         },
       },
     };
+  },
+  setup() {
+    const v$ = useVuelidate();
+    return { v$ };
   },
   directives: {
     maska: vMaska,
   },
   created() {
     this.fetchUsers();
-  },
-  setup() {
-    return { v$: useVuelidate() };
   },
   methods: {
     async fetchUsers() {
@@ -366,15 +385,11 @@ export default {
       }
     },
     async createUser() {
-      this.v$.newUser.$touch(); // Marcar todos los campos como tocados para disparar las validaciones
+      this.v$.newUser.$touch(); // Marca todos los campos como tocados
       if (this.v$.newUser.$invalid) {
-        showAlert({
-          status: false,
-          message: "Por favor, corrige los errores en el formulario",
-        });
+        // Si hay errores, no continúa
         return;
       }
-
       try {
         const response = await AxiosRequest(
           "/usuarios_public/usuarios",
@@ -391,15 +406,11 @@ export default {
       }
     },
     async updateUser() {
-      this.v$.selectedUser.$touch();
+      this.v$.selectedUser.$touch(); // Marca todos los campos como tocados
       if (this.v$.selectedUser.$invalid) {
-        showAlert({
-          status: false,
-          message: "Por favor, corrige los errores en el formulario",
-        });
+        // Si hay errores, no continúa
         return;
       }
-
       try {
         this.selectedUser.estado = this.selectedUser.estado ? 1 : 0;
         const response = await AxiosRequest(
@@ -510,6 +521,11 @@ h1 {
 .blue--text {
   color: blue;
   font-size: 2rem;
+}
+.red--text {
+  color: red;
+  font-size: 0.4rem;
+  margin-top: 5px;
 }
 </style>
   
