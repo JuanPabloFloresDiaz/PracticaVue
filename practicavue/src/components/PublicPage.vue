@@ -173,7 +173,9 @@
               outlined
               required
               :error="v$.selectedUser.nombre.$invalid"
-              :error-messages="v$.selectedUser.nombre.$errors.map((e) => e.$message)"
+              :error-messages="
+                v$.selectedUser.nombre.$errors.map((e) => e.$message)
+              "
               @input="v$.selectedUser.nombre.$touch()"
               @blur="v$.selectedUser.nombre.$touch()"
             />
@@ -183,7 +185,9 @@
               outlined
               required
               :error="v$.selectedUser.correo.$invalid"
-              :error-messages="v$.selectedUser.correo.$errors.map((e) => e.$message)"
+              :error-messages="
+                v$.selectedUser.correo.$errors.map((e) => e.$message)
+              "
               @input="v$.selectedUser.correo.$touch()"
               @blur="v$.selectedUser.correo.$touch()"
             />
@@ -193,7 +197,9 @@
               outlined
               v-maska="'####-####'"
               :error="v$.selectedUser.telefono.$invalid"
-              :error-messages="v$.selectedUser.telefono.$errors.map((e) => e.$message)"
+              :error-messages="
+                v$.selectedUser.telefono.$errors.map((e) => e.$message)
+              "
               @input="v$.selectedUser.telefono.$touch()"
               @blur="v$.selectedUser.telefono.$touch()"
             />
@@ -203,7 +209,9 @@
               outlined
               v-maska="'########-#'"
               :error="v$.selectedUser.dui.$invalid"
-              :error-messages="v$.selectedUser.dui.$errors.map((e) => e.$message)"
+              :error-messages="
+                v$.selectedUser.dui.$errors.map((e) => e.$message)
+              "
               @input="v$.selectedUser.dui.$touch()"
               @blur="v$.selectedUser.dui.$touch()"
             />
@@ -212,7 +220,9 @@
               label="Dirección"
               outlined
               :error="v$.selectedUser.direccion.$invalid"
-              :error-messages="v$.selectedUser.direccion.$errors.map((e) => e.$message)"
+              :error-messages="
+                v$.selectedUser.direccion.$errors.map((e) => e.$message)
+              "
               @input="v$.selectedUser.direccion.$touch()"
               @blur="v$.selectedUser.direccion.$touch()"
             />
@@ -222,7 +232,9 @@
               outlined
               type="date"
               :error="v$.selectedUser.nacimiento.$invalid"
-              :error-messages="v$.selectedUser.nacimiento.$errors.map((e) => e.$message)"
+              :error-messages="
+                v$.selectedUser.nacimiento.$errors.map((e) => e.$message)
+              "
               @input="v$.selectedUser.nacimiento.$touch()"
               @blur="v$.selectedUser.nacimiento.$touch()"
             />
@@ -312,6 +324,7 @@ export default {
         },
         clave: {
           required: validationRules.required,
+          validPassword: validationRules.validPassword,
         },
         telefono: {
           required: validationRules.required,
